@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using DetectiveAgencyProject.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +8,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DetectiveAgencyDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Налаштування Identity з ролями
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>() // Додати підтримку ролей
+    .AddEntityFrameworkStores<DetectiveAgencyDbContext>();
+
 // Додати контролери з виглядом
 builder.Services.AddControllersWithViews();
+
+// Додати сторінки Razor
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
@@ -25,7 +34,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapRazorPages();
 
 // Карта контролерів
 app.MapControllerRoute(
@@ -40,6 +52,10 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<DetectiveAgencyDbContext>();
         context.Database.Migrate(); // Виконати міграцію
+
+        // Сидування ролей
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        await SeedRolesAsync(roleManager); // Викликаємо метод сидування ролей
     }
     catch (Exception ex)
     {
@@ -49,3 +65,17 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+// Метод сидування ролей
+async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+{
+    string[] roleNames = { "Cool", "NotCool" };
+
+    foreach (var roleName in roleNames)
+    {
+        if (!await roleManager.RoleExistsAsync(roleName))
+        {
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+    }
+}

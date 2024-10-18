@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DetectiveAgencyProject.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Detective.Controllers
 {
+    [Authorize(Roles = "Cool")]
     public class DetectivesController : Controller
     {
         private readonly DetectiveAgencyDbContext _context;

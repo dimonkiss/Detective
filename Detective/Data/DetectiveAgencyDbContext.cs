@@ -1,8 +1,9 @@
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DetectiveAgencyProject.Models
 {
-    public class DetectiveAgencyDbContext : DbContext
+    public class DetectiveAgencyDbContext : IdentityDbContext
     {
         public DetectiveAgencyDbContext(DbContextOptions<DetectiveAgencyDbContext> options)
             : base(options)
@@ -18,6 +19,8 @@ namespace DetectiveAgencyProject.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder); // Не забудьте викликати базовий метод
+
             // Agency-Detective relationship
             modelBuilder.Entity<Detective>()
                 .HasOne<Agency>()
