@@ -6,6 +6,38 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 
+    <form method="post">
+        <div class="form-group">
+            <label for="coreCount">Введіть кількість ядер:</label>
+            <input type="number" id="coreCount" name="coreCount" class="form-control" required min="1" />
+        </div>
+        <button type="submit" class="btn btn-primary">Виконати запити</button>
+    </form>
 
-
+    @if (ViewData["Timings"] != null)
+    {
+        var timings = (List<(string Method, long TimeFor20, long TimeFor100000)>)ViewData["Timings"];
+        <div>
+            <h2>Результати виконання запитів</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Метод</th>
+                        <th>Час для 20 запитів (мс)</th>
+                        <th>Час для 100000 запитів (мс)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var timing in timings)
+                    {
+                        <tr>
+                            <td>@timing.Method</td>
+                            <td>@timing.TimeFor20</td>
+                            <td>@timing.TimeFor100000</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
